@@ -4,62 +4,61 @@
  * @class
  */
 function Speech() {
-    this.parts = [];
+  this.parts = [];
 }
 
 function formatAttributes(options){
 	let output = "";
-	for(var option in options){
-		console.log(option);
-		output += option ? `${option}="${options[option]}"`:``;
-	}
+  options.map(function(option){
+    output += `${option}="${options[option]} "`;
+  })
 	return output;
 }
 
 Speech.prototype.prosody = function(options) {
-	let last = `<prosody ${formatAttributes(options)}> ${this.parts.pop()} </prosody>`
+	let last = `<prosody ${formatAttributes(options)}>${this.parts.pop()}</prosody>`
 	this.parts.push(last);
 	return this;
 }
 
-Speech.prototype.emphasis = function(options) {
-	let last = `<emphasis ${formatAttributes(options)}> ${this.parts.pop()} </emphasis>`;
+Speech.prototype.emphasis = function(level='moderate') {
+	let last = `<emphasis level="${level}">${this.parts.pop()}</emphasis>`;
 	this.parts.push(last);
 	return this;
 }
 
-Speech.prototype.sub = function(options) {
-	let last = `<sub ${formatAttributes(options)}> ${this.parts.pop()} </sub>`;
+Speech.prototype.sub = function(alias) {
+	let last = `<sub alias="${alias}">${this.parts.pop()}</sub>`;
 	this.parts.push(last);
 	return this;
 }
 
-Speech.prototype.w = function(options) {
-	let last = `<w ${formatAttributes(options)}> ${this.parts.pop()} </w>`;
+Speech.prototype.w = function(role) {
+	let last = `<w role="${role}">${this.parts.pop()}</w>`;
 	this.parts.push(last);
 	return this;
 }
 
 Speech.prototype.p = function() {
-	let last = `<p> ${this.parts.pop()} </p>`;
+	let last = `<p>${this.parts.pop()}</p>`;
 	this.parts.push(last);
 	return this;
 }
 
-Speech.prototype.audio = function(options) {
-	let last = `<audio ${formatAttributes(options)} />`;
+Speech.prototype.audio = function(src) {
+	let last = `<audio src="${src}"/>`;
 	this.parts.push(last);
 	return this;
 }
 
 Speech.prototype.break = function(options) {
-	let last = `<audio ${formatAttributes(options)} />`;
+	let last = `<break ${formatAttributes(options)}/>`;
 	this.parts.push(last);
 	return this;
 }
 
-Speech.prototype.phoneme = function(options) {
-	let last = `<phoneme ${formatAttributes(options)}> ${this.parts.pop()} </phoneme>`;
+Speech.prototype.phoneme = function(ph, alphabet='ipa') {
+	let last = `<phoneme ph="${ph}" ${formatAttributes([{alphabet:alphabet}])}>${this.parts.pop()}</phoneme>`;
 	this.parts.push(last);
 	return this;
 }
