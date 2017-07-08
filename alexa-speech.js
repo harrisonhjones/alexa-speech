@@ -4,21 +4,86 @@
  * @class
  */
 function Speech() {
-    this.parts = [];
+  this.parts = [];
 }
+
+function formatAttributes(options){
+	let output = "";
+  for(var option in options){
+    output += `${option}="${options[option]}" `;
+  }
+	return output;
+}
+
+Speech.prototype.whisper = function(options) {
+	let last = `<amazon:effect name="whispered">${this.parts.pop()}</amazon:effect>`
+	this.parts.push(last);
+	return this;
+}
+
+Speech.prototype.prosody = function(options) {
+	let last = `<prosody ${formatAttributes(options)}>${this.parts.pop()}</prosody>`
+	this.parts.push(last);
+	return this;
+}
+
+Speech.prototype.emphasis = function(level='moderate') {
+	let last = `<emphasis level="${level}">${this.parts.pop()}</emphasis>`;
+	this.parts.push(last);
+	return this;
+}
+
+Speech.prototype.sub = function(alias) {
+	let last = `<sub alias="${alias}">${this.parts.pop()}</sub>`;
+	this.parts.push(last);
+	return this;
+}
+
+Speech.prototype.w = function(role) {
+	let last = `<w role="${role}">${this.parts.pop()}</w>`;
+	this.parts.push(last);
+	return this;
+}
+
+Speech.prototype.p = function() {
+	let last = `<p>${this.parts.pop()}</p>`;
+	this.parts.push(last);
+	return this;
+}
+
+Speech.prototype.audio = function(src) {
+	let last = `<audio src="${src}"/>`;
+	this.parts.push(last);
+	return this;
+}
+
+Speech.prototype.break = function(options) {
+	let last = `<break ${formatAttributes(options)}/>`;
+	this.parts.push(last);
+	return this;
+}
+
+Speech.prototype.phoneme = function(ph, alphabet='ipa') {
+	let last = `<phoneme ph="${ph}" ${formatAttributes([{alphabet:alphabet}])}>${this.parts.pop()}</phoneme>`;
+	this.parts.push(last);
+	return this;
+}
+
+
+// --------------------
 
 /**
  * Renders the speech stack.
  * @returns {string} - The rendered speech (<speak>response</speak>).
  */
-Speech.prototype.render = function() {
-    var output = '<speak>';
+Speech.prototype.render = function(wrapInSpeak = false) {
+    var output = wrapInSpeak?'<speak>':'';
 
     for (var i = 0; i < this.parts.length; i++) {
         output += this.parts[i];
     }
 
-    output += '</speak>';
+    output += wrapInSpeak?'</speak>':'';
     return output;
 }
 
